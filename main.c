@@ -45,10 +45,11 @@ int main(int argc, char *argv[]){
     }
 
     /* Set the uri to play */
-    gchar *uri;
-    printf("Enter URI for video or audio source: ");
-    scanf("%s",uri);
-    g_object_set(data.source,"uri",uri);
+    gchar uri[1<<10];
+    printf("Enter URI: ");
+    fgets(uri,sizeof(uri),stdin);
+    //uri = "https://gstreamer.freedesktop.org/data/media/sintel_trailer-480p.webm";
+    g_object_set(data.source,"uri",uri,NULL);
 
     /* Connect to the pad-added signal */
     g_signal_connect(data.source,"pad-added",G_CALLBACK(pad_added_handler),&data);
@@ -134,7 +135,7 @@ static void pad_added_handler(GstElement *src, GstPad *new_pad, CustomData *data
     new_pad_caps = gst_pad_get_current_caps(new_pad);
     new_pad_struct = gst_caps_get_structure(new_pad_caps,0);
     new_pad_type = gst_structure_get_name(new_pad_struct);
-    if (!g_str_has_prefix(new_pad_type,"autio/x-raw")){
+    if (!g_str_has_prefix(new_pad_type,"audio/x-raw")){
         g_print("It has type '%s' which is not raw audio. Ignoring.\n",new_pad_type);
         goto exit;
     }
